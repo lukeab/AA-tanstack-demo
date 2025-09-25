@@ -1,48 +1,52 @@
 // src/routes/index.tsx
-import * as fs from 'node:fs'
+
 import { createFileRoute, useRouter } from '@tanstack/react-router'
-import { createServerFn } from '@tanstack/react-start'
-
-const filePath = 'count.txt'
-
-async function readCount() {
-  return parseInt(
-    await fs.promises.readFile(filePath, 'utf-8').catch(() => '0'),
-  )
-}
-
-const getCount = createServerFn({
-  method: 'GET',
-}).handler(() => {
-  return readCount()
-})
-
-const updateCount = createServerFn({ method: 'POST' })
-  .validator((d: number) => d)
-  .handler(async ({ data }) => {
-    const count = await readCount()
-    await fs.promises.writeFile(filePath, `${count + data}`)
-  })
+import { FileInput, Button, Group, Text } from '@mantine/core'
+import { Dropzone, IMAGE_MIME_TYPE } from '@mantine/dropzone';
+import { useFileStore } from '@/stores/useFileStore'
 
 export const Route = createFileRoute('/')({
   component: Home,
-  loader: async () => await getCount(),
 })
 
 function Home() {
   const router = useRouter()
-  const state = Route.useLoaderData()
+  const { file, setFile } = useFileStore()
+
+  const handleViewFile = () => {
+    router.navigate({ to: '/viewfile' })
+  }
 
   return (
-    <button
-      type="button"
-      onClick={() => {
-        updateCount({ data: 1 }).then(() => {
-          router.invalidate()
-        })
-      }}
-    >
-      Add 1 to {state}?
-    </button>
+    <div>
+      <h1>File Upload</h1>
+      <Dropzone onDrop={(files) => setFile(files[0])}>
+        <Group justify="center" gap="xl" mih={220} style={{ pointerEvents: 'none' }}>
+          {file ? (
+            <Text>Selected file: {file.name}</Text>
+          ) : (
+            <>
+              <Dropzone.Accept>
+                <Text>Drop files here</Text>
+              </Dropzone.Accept>
+              <Dropzone.Reject>
+                <Text>File type not supported</Text>
+              </Dropzone.Reject>
+              <Dropzone.Idle>
+                <Text>Drag & drop a file here, or click to select a file</Text>
+              </Dropzone.Idle>
+            </>
+          )}
+        </Group>
+      </Dropzone>
+      <Group mt="md">
+        <Button onClick={handleViewFile} disabled={!file}>
+          View File
+        </Button>
+        <Button onClick={() => setFile(null)} disabled={!file} variant="outline">
+          Clear
+        </Button>
+      </Group>
+    </div>
   )
 }

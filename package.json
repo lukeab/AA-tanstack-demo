@@ -12,11 +12,15 @@
     "build": "vite build"
   },
   "dependencies": {
+    "@mantine/core": "^8.3.2",
+    "@mantine/dropzone": "^8.3.2",
+    "@mantine/hooks": "^8.3.2",
     "@tanstack/react-router": "^1.131.49",
     "@tanstack/react-start": "^1.131.49",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
-    "vite": "^7.1.6"
+    "vite": "^7.1.6",
+    "zustand": "^5.0.8"
   },
   "devDependencies": {
     "@types/react": "^19.1.13",
