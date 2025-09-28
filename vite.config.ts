@@ -13,4 +13,9 @@ export default defineConfig({
     tanstackStart({ customViteReactPlugin: true }),
     viteReact(),
   ],
+   resolve: {
+    alias: {
+      src: "/src",
+    },
+  },
 })
